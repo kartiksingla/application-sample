@@ -1,4 +1,4 @@
-package com.practice.application.cache;
+package com.practice.application.cache.impl;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -7,7 +7,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TimeToLiveCache<K, V> implements ITimeToLiveCache<K, V> {
+import com.practice.application.cache.ICache;
+import com.practice.application.cache.model.ValueObjectHolder;
+
+public class TimeToLiveCache<K, V> implements ICache<K, V> {
 
     private final long timeToLiveSeconds;
 
@@ -23,7 +26,7 @@ public class TimeToLiveCache<K, V> implements ITimeToLiveCache<K, V> {
         Runnable cleanerWorker = () -> {
             while (true) {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(7);
                 } catch (InterruptedException e) {
                     System.err.println(e.getLocalizedMessage());
                 }
@@ -53,27 +56,26 @@ public class TimeToLiveCache<K, V> implements ITimeToLiveCache<K, V> {
         return null;
     }
 
+	public void cleanUpJob() {
+		LocalDateTime time = LocalDateTime.now();
+		cacheMap.keySet().forEach(key -> {
+			ValueObjectHolder<V> valueObject = cacheMap.get(key);
+			if (valueObject != null) {
+				LocalDateTime lastAccessTime = valueObject.getLastAccessTime();
+				long diff = ChronoUnit.SECONDS.between(lastAccessTime, time);
+				if (diff > this.timeToLiveSeconds) {
+					synchronized (cacheMap) {
+						this.removeCachedValue(key);
+					}
+					Thread.yield();
+				}
+			}
+		});
+	}
+    
     @Override
     public void removeCachedValue(K key) {
         cacheMap.remove(key);
     }
-
-    @Override
-    public void cleanUpJob() {
-        LocalDateTime time = LocalDateTime.now();
-        cacheMap.keySet().forEach(key -> {
-                    ValueObjectHolder<V> valueObject = cacheMap.get(key);
-                    synchronized (cacheMap) {
-                        if (valueObject != null) {
-                            LocalDateTime lastAccessTime = valueObject.getLastAccessTime();
-                            long diff = ChronoUnit.SECONDS.between(lastAccessTime, time);
-                            if (diff > this.timeToLiveSeconds) {
-                                this.removeCachedValue(key);
-                                Thread.yield();
-                            }
-                        }
-                    }
-                }
-        );
-    }
 }
+
