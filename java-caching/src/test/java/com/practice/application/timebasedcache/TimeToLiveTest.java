@@ -1,7 +1,8 @@
-package com.practice.application;
+package com.practice.application.timebasedcache;
 
-import com.practice.application.cache.ITimeToLiveCache;
-import com.practice.application.cache.TimeToLiveCache;
+import com.practice.application.cache.ICache;
+import com.practice.application.cache.impl.TimeToLiveCache;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit test for simple AppLauncher.
  */
-public class AppTest {
+public class TimeToLiveTest {
     /**
      * Rigorous Test :-)
      */
@@ -21,7 +22,7 @@ public class AppTest {
         assertTrue(true);
     }
 
-    private ITimeToLiveCache<String,String> cache;
+    private ICache<String,String> cache;
     @Before
     public void setup()
     {

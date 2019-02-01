@@ -1,4 +1,4 @@
-package com.practice.application.cache;
+package com.practice.application.cache.model;
 
 import java.time.LocalDateTime;
 
