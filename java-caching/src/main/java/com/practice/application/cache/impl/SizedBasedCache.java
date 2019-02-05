@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.practice.application.cache.ICache;
+import com.practice.application.cache.notification.IBroadcaster;
 
 public final class SizedBasedCache<K, V> implements ICache<K, V> {
 
@@ -21,6 +22,8 @@ public final class SizedBasedCache<K, V> implements ICache<K, V> {
 	private Lock readLock;
 
 	private Lock writeLock;
+
+	private IBroadcaster<K> notifier;
 
 	public SizedBasedCache(final int cacheSize) {
 		this.cacheMaxSize = cacheSize;
@@ -43,7 +46,9 @@ public final class SizedBasedCache<K, V> implements ICache<K, V> {
 				recentReferences.remove(key);
 
 			while (recentReferences.size() >= cacheMaxSize) {
-				cacheMap.remove(recentReferences.poll());
+				K evictedElement = recentReferences.poll();
+				cacheMap.remove(evictedElement);
+				notifier.fireEvent(evictedElement);
 			}
 			cacheMap.put(key, value);
 			recentReferences.add(key);
@@ -77,6 +82,11 @@ public final class SizedBasedCache<K, V> implements ICache<K, V> {
 		} finally {
 			readLock.unlock();
 		}
+	}
+
+	@Override
+	public void attachNotifierService(IBroadcaster<K> notiferService) {
+		this.notifier = notiferService;
 	}
 
 }

@@ -26,7 +26,7 @@ public class TimeToLiveTest {
     @Before
     public void setup()
     {
-        cache = new TimeToLiveCache<>(7,10);
+        cache = new TimeToLiveCache<>(10);
         for(int i = 0; i< 5; i++)
         {
             cache.put("k_" + i,"v_"+i);
