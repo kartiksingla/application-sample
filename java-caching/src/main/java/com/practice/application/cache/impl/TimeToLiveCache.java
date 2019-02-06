@@ -29,7 +29,7 @@ public class TimeToLiveCache<K, V> implements ICache<K, V> {
 		Runnable cleanerWorker = () -> {
 			while (true) {
 				try {
-					TimeUnit.SECONDS.sleep(7);
+					TimeUnit.SECONDS.sleep(1);
 				} catch (InterruptedException e) {
 					System.err.println(e.getLocalizedMessage());
 				}
@@ -67,13 +67,14 @@ public class TimeToLiveCache<K, V> implements ICache<K, V> {
 				if (valueObject != null) {
 					LocalDateTime lastAccessTime = valueObject.getLastAccessTime();
 					long diff = ChronoUnit.SECONDS.between(lastAccessTime, time);
-					if (diff > this.timeToLiveSeconds) {
+					if (diff >= this.timeToLiveSeconds) {
 						this.removeCachedValue(key);
 						Thread.yield();
 					}
 				}
 			}
 		});
+		
 	}
 
 	@Override
