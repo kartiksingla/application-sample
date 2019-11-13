@@ -21,12 +21,12 @@ public class UserController {
 	@GetMapping("user/{id}")
 	public ResponseEntity<UserDetails> getUser(@PathVariable String id) {
 		UserDetails userDetails = userManagerService.getUserById(id);
-		return new ResponseEntity<UserDetails>(userDetails,HttpStatus.OK);
+		return new ResponseEntity<>(userDetails,HttpStatus.OK);
 	}
 	
 	@PostMapping("user")
 	public ResponseEntity<String> addUser(@RequestBody UserDetails user) {
 		UserDetails userDetails = userManagerService.addUser(user);
-		return new ResponseEntity<String>(userDetails.getId(),HttpStatus.CREATED);
+		return new ResponseEntity<>(userDetails.getId(),HttpStatus.CREATED);
 	}
 }

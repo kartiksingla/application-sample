@@ -23,7 +23,7 @@ public class AuditorWithUUID implements Serializable {
 	@CreatedDate
 	private Instant createdAt;
 
-	@Column(name = "last_updated_time", nullable = false, columnDefinition = "datetime default NOW()")
+	@Column(name = "last_updated_time", nullable = false , columnDefinition = "datetime default SYSTIMESTAMP" )
 	@LastModifiedDate
 	private Instant lastUpdatedAt;
 
